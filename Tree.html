@@ -1,1 +1,539 @@
-## treeeeeeeeeeeeeee
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TreeLens | Tree Impact Scanner</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #edf8ef, #d8f0df, #f7fbf2);
+      color: #123524;
+    }
+
+    .app {
+      width: min(1120px, 100%);
+      margin: 0 auto;
+      padding: 28px;
+    }
+
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 56px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      font-size: 22px;
+    }
+
+    .logo-mark {
+      width: 38px;
+      height: 38px;
+      border-radius: 14px;
+      background: #1f7a45;
+      display: grid;
+      place-items: center;
+      color: white;
+      box-shadow: 0 12px 30px rgba(31, 122, 69, 0.25);
+    }
+
+    .nav-pill {
+      background: rgba(255, 255, 255, 0.7);
+      border: 1px solid rgba(31, 122, 69, 0.12);
+      padding: 10px 16px;
+      border-radius: 999px;
+      font-size: 14px;
+      color: #28543d;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 36px;
+      align-items: center;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.75);
+      color: #1f7a45;
+      border: 1px solid rgba(31, 122, 69, 0.13);
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      font-size: clamp(42px, 7vw, 76px);
+      line-height: 0.95;
+      letter-spacing: -3px;
+      margin-bottom: 22px;
+    }
+
+    .hero p {
+      font-size: 18px;
+      line-height: 1.65;
+      color: #426352;
+      max-width: 600px;
+      margin-bottom: 28px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    button, .upload-label {
+      border: none;
+      cursor: pointer;
+      border-radius: 18px;
+      padding: 15px 20px;
+      font-weight: 800;
+      font-size: 15px;
+      transition: 0.2s ease;
+    }
+
+    .primary {
+      background: #1f7a45;
+      color: white;
+      box-shadow: 0 16px 35px rgba(31, 122, 69, 0.25);
+    }
+
+    .primary:hover {
+      transform: translateY(-2px);
+      background: #176239;
+    }
+
+    .secondary, .upload-label {
+      background: rgba(255, 255, 255, 0.82);
+      color: #1f7a45;
+      border: 1px solid rgba(31, 122, 69, 0.14);
+    }
+
+    .secondary:hover, .upload-label:hover {
+      transform: translateY(-2px);
+      background: white;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    .phone {
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid rgba(31, 122, 69, 0.13);
+      border-radius: 38px;
+      padding: 18px;
+      box-shadow: 0 30px 80px rgba(34, 78, 54, 0.18);
+    }
+
+    .screen {
+      background: #f9fff8;
+      border-radius: 28px;
+      padding: 18px;
+      min-height: 580px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .camera-box {
+      height: 255px;
+      border-radius: 24px;
+      background: linear-gradient(160deg, #447a50, #9ec28d);
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+
+    .camera-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+    }
+
+    .tree-emoji {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      font-size: 100px;
+    }
+
+    .scan-line {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 20%;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.9);
+      box-shadow: 0 0 18px rgba(255, 255, 255, 0.9);
+      animation: scan 2.2s infinite;
+    }
+
+    @keyframes scan {
+      0%, 100% { top: 18%; }
+      50% { top: 82%; }
+    }
+
+    .result-card {
+      background: white;
+      border: 1px solid rgba(31, 122, 69, 0.12);
+      border-radius: 24px;
+      padding: 18px;
+      margin-bottom: 14px;
+    }
+
+    .result-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: start;
+    }
+
+    .result-card h2 {
+      font-size: 28px;
+      margin-bottom: 4px;
+    }
+
+    .latin {
+      color: #668170;
+      font-style: italic;
+      margin-bottom: 12px;
+    }
+
+    .confidence {
+      background: #e6f6e9;
+      color: #1f7a45;
+      padding: 8px 10px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .size-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .size-btn {
+      background: #f1f7f2;
+      color: #426352;
+      padding: 12px 8px;
+      border-radius: 15px;
+      font-size: 13px;
+    }
+
+    .size-btn.active {
+      background: #1f7a45;
+      color: white;
+    }
+
+    .impact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .impact {
+      background: #f1f8f1;
+      border-radius: 20px;
+      padding: 14px;
+    }
+
+    .impact span {
+      display: block;
+      color: #6b8273;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .impact strong {
+      font-size: 22px;
+      color: #123524;
+    }
+
+    .meter-wrap {
+      margin-top: 12px;
+    }
+
+    .meter-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .meter {
+      height: 12px;
+      background: #dfeee3;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .meter-fill {
+      height: 100%;
+      width: 60%;
+      background: linear-gradient(90deg, #79b86b, #1f7a45);
+      border-radius: 999px;
+      transition: 0.25s ease;
+    }
+
+    .story {
+      color: #426352;
+      line-height: 1.55;
+      font-size: 14px;
+    }
+
+    .section {
+      margin-top: 70px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .feature {
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid rgba(31, 122, 69, 0.12);
+      border-radius: 26px;
+      padding: 22px;
+    }
+
+    .feature h3 {
+      margin: 12px 0 8px;
+      font-size: 20px;
+    }
+
+    .feature p {
+      color: #526d5d;
+      line-height: 1.55;
+    }
+
+    @media (max-width: 850px) {
+      .hero, .section {
+        grid-template-columns: 1fr;
+      }
+
+      nav {
+        margin-bottom: 32px;
+      }
+
+      .screen {
+        min-height: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <nav>
+      <div class="logo">
+        <div class="logo-mark">🌿</div>
+        TreeLens
+      </div>
+      <div class="nav-pill">Hackathon Demo</div>
+    </nav>
+
+    <section class="hero">
+      <div>
+        <div class="badge">🌎 Tree scanner + impact meter</div>
+        <h1>Scan trees. See their impact.</h1>
+        <p>
+          TreeLens identifies a tree from a photo, estimates its environmental value,
+          and turns everyday nature into something people can understand, track, and protect.
+        </p>
+
+        <div class="actions">
+          <label class="upload-label" for="imageUpload">Upload Tree Photo</label>
+          <input id="imageUpload" type="file" accept="image/*" />
+          <button class="primary" onclick="fakeScan()">Run Demo Scan</button>
+          <button class="secondary" onclick="saveTree()">Save to Impact Log</button>
+        </div>
+      </div>
+
+      <div class="phone">
+        <div class="screen">
+          <div class="camera-box">
+            <img id="preview" alt="Uploaded tree preview" />
+            <div class="tree-emoji" id="treeEmoji">🌳</div>
+            <div class="scan-line"></div>
+          </div>
+
+          <div class="result-card">
+            <div class="result-top">
+              <div>
+                <h2 id="treeName">Sugar Maple</h2>
+                <div class="latin" id="scientificName">Acer saccharum</div>
+              </div>
+              <div class="confidence" id="confidence">92% match</div>
+            </div>
+            <p class="story" id="description">
+              A native Ontario tree known for its bright fall colours, shade coverage,
+              and strong support for local wildlife.
+            </p>
+
+            <div class="size-row">
+              <button class="size-btn" onclick="setSize('small', this)">Small</button>
+              <button class="size-btn active" onclick="setSize('medium', this)">Medium</button>
+              <button class="size-btn" onclick="setSize('large', this)">Large</button>
+            </div>
+          </div>
+
+          <div class="result-card">
+            <h2 style="font-size: 22px; margin-bottom: 12px;">Environmental Impact</h2>
+            <div class="impact-grid">
+              <div class="impact">
+                <span>CO₂ ABSORBED</span>
+                <strong id="co2">22 kg</strong>
+              </div>
+              <div class="impact">
+                <span>DRIVING OFFSET</span>
+                <strong id="driving">92 km</strong>
+              </div>
+              <div class="impact">
+                <span>OXYGEN SUPPORT</span>
+                <strong id="oxygen">2 people</strong>
+              </div>
+              <div class="impact">
+                <span>COOLING SCORE</span>
+                <strong id="cooling">60/100</strong>
+              </div>
+            </div>
+
+            <div class="meter-wrap">
+              <div class="meter-label">
+                <span>Impact Meter</span>
+                <span id="meterText">Medium</span>
+              </div>
+              <div class="meter">
+                <div class="meter-fill" id="meterFill"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="feature">
+        <div style="font-size: 34px;">📸</div>
+        <h3>Tree Identification</h3>
+        <p>Users scan or upload a tree photo to get a species name, scientific name, and confidence score.</p>
+      </div>
+      <div class="feature">
+        <div style="font-size: 34px;">🌍</div>
+        <h3>Impact Meter</h3>
+        <p>The app estimates yearly carbon absorption, driving offset, oxygen support, and cooling value.</p>
+      </div>
+      <div class="feature">
+        <div style="font-size: 34px;">🗺️</div>
+        <h3>Community Log</h3>
+        <p>Saved scans can become a local map showing how much impact trees provide across a school or city.</p>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const impactData = {
+      small: { co2: 10, oxygen: 1, cooling: 25, label: "Small" },
+      medium: { co2: 22, oxygen: 2, cooling: 60, label: "Medium" },
+      large: { co2: 48, oxygen: 4, cooling: 90, label: "Large" }
+    };
+
+    const demoTrees = [
+      {
+        name: "Sugar Maple",
+        scientific: "Acer saccharum",
+        confidence: 92,
+        description: "A native Ontario tree known for its bright fall colours, shade coverage, and strong support for local wildlife."
+      },
+      {
+        name: "White Pine",
+        scientific: "Pinus strobus",
+        confidence: 88,
+        description: "Ontario's provincial tree. It stores carbon, provides shelter for birds, and can live for hundreds of years."
+      },
+      {
+        name: "Red Oak",
+        scientific: "Quercus rubra",
+        confidence: 85,
+        description: "A strong native hardwood that supports insects, squirrels, birds, and creates valuable shade in urban spaces."
+      }
+    ];
+
+    let currentSize = "medium";
+    let savedCount = 0;
+    let totalCo2 = 0;
+
+    function setSize(size, button) {
+      currentSize = size;
+      document.querySelectorAll(".size-btn").forEach(btn => btn.classList.remove("active"));
+      button.classList.add("active");
+      updateImpact();
+    }
+
+    function updateImpact() {
+      const impact = impactData[currentSize];
+      const drivingKm = Math.round(impact.co2 / 0.24);
+
+      document.getElementById("co2").textContent = `${impact.co2} kg`;
+      document.getElementById("driving").textContent = `${drivingKm} km`;
+      document.getElementById("oxygen").textContent = `${impact.oxygen} ${impact.oxygen === 1 ? "person" : "people"}`;
+      document.getElementById("cooling").textContent = `${impact.cooling}/100`;
+      document.getElementById("meterText").textContent = impact.label;
+      document.getElementById("meterFill").style.width = `${impact.cooling}%`;
+    }
+
+    function fakeScan() {
+      const tree = demoTrees[Math.floor(Math.random() * demoTrees.length)];
+      document.getElementById("treeName").textContent = tree.name;
+      document.getElementById("scientificName").textContent = tree.scientific;
+      document.getElementById("confidence").textContent = `${tree.confidence}% match`;
+      document.getElementById("description").textContent = tree.description;
+    }
+
+    function saveTree() {
+      const impact = impactData[currentSize];
+      savedCount++;
+      totalCo2 += impact.co2;
+      alert(`Saved! Your impact log now has ${savedCount} tree(s), absorbing about ${totalCo2} kg of CO₂ per year.`);
+    }
+
+    document.getElementById("imageUpload").addEventListener("change", function(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const preview = document.getElementById("preview");
+      preview.src = URL.createObjectURL(file);
+      preview.style.display = "block";
+      document.getElementById("treeEmoji").style.display = "none";
+      fakeScan();
+    });
+
+    updateImpact();
+  </script>
+</body>
+</html>
